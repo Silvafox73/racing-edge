@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101b17">
+<title>Racing Edge</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--bg:#0d1512;--panel:#17231e;--panel2:#202e27;--line:#304238;--txt:#f3f7f3;--muted:#aab9af;--green:#8ee0a6;--gold:#f2ca75;--red:#f18b83}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:15px system-ui,-apple-system,Segoe UI,sans-serif;padding-bottom:84px}
+header{padding:22px 18px 16px;background:linear-gradient(140deg,#183b2b,#101b17 70%);border-bottom:1px solid var(--line)}
+.brand{font-size:12px;letter-spacing:2px;color:var(--green);font-weight:800}.brand span{color:var(--gold)}
+h1{font-size:29px;margin:5px 0 3px;letter-spacing:-.7px}.sub{color:var(--muted);font-size:13px}
+main{padding:16px;max-width:720px;margin:auto}.toprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.pill{border:1px solid #42624e;border-radius:20px;padding:5px 9px;color:var(--green);font-size:11px;font-weight:700}
+h2{font-size:18px;margin:18px 0 10px}.muted{color:var(--muted)}.small{font-size:12px;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0}
+.hero{background:linear-gradient(135deg,#1b3829,#17231e);border-color:#3b6249}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}
+.stat{background:#0e1914;border-radius:11px;padding:10px}.stat b{display:block;font-size:19px}.stat span{font-size:10px;color:var(--muted)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.horse{font-weight:750;font-size:16px}.odds{font-weight:800;color:var(--gold);font-size:20px}
+.tag{font-size:10px;border-radius:20px;padding:4px 8px;background:#244b34;color:var(--green);font-weight:800}
+.tag.warn{background:#4a3920;color:var(--gold)}.tag.neutral{background:#2b3932;color:#c3d0c8}
+button{border:0;border-radius:11px;background:var(--green);color:#102018;font-weight:800;padding:12px 14px;font-size:14px}
+button.secondary{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:#111c17;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:9px 4px calc(9px + env(safe-area-inset-bottom));z-index:5}
+.tabs button{background:transparent;color:var(--muted);padding:8px 10px;font-size:12px}.tabs button.active{color:var(--green)}
+input,select{width:100%;background:#0e1914;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:11px;margin:5px 0 10px;font:inherit}
+label{font-size:12px;color:var(--muted)}.hidden{display:none}
+.scorebar{height:7px;background:#304238;border-radius:8px;overflow:hidden;margin-top:8px}.scorebar i{display:block;height:100%;background:var(--green)}
+.notice{border-left:3px solid var(--gold);padding:9px 11px;background:#28251c;border-radius:7px;color:#e6d9b8;font-size:12px;line-height:1.5}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:18px}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand">RACING <span>EDGE</span></div>
+ <h1>Find the value.</h1>
+ <div class="sub">A smarter way to assess horse-racing prices</div>
+</header>
+<main>
+<section id="home">
+ <div class="toprow"><div><b>Today's dashboard</b><div class="small" id="today"></div></div><span class="pill">FREE BUILD · V1</span></div>
+ <div class="card hero">
+  <div class="row"><b>Value finder</b><span class="tag neutral">DEMO DATA</span></div>
+  <div style="font-size:25px;font-weight:850;margin-top:8px">Price vs probability</div>
+  <div class="small">We compare your estimated chance of winning with the chance implied by the odds.</div>
+  <div class="statgrid">
+   <div class="stat"><b id="raceCount">3</b><span>DEMO RACES</span></div>
+   <div class="stat"><b id="pickCount">2</b><span>VALUE FLAGS</span></div>
+   <div class="stat"><b>0</b><span>LIVE FEEDS</span></div>
+  </div>
+ </div>
+ <h2>Top value shortlist</h2>
+ <div id="shortlist"></div>
+ <div class="notice">These are fictional examples to demonstrate the app. They are not today's racecards, live odds or betting tips. A high value score does not guarantee a winner.</div>
+ <h2>How value is measured</h2>
+ <div class="card"><b>Implied probability</b><p class="small">For decimal odds: 1 ÷ decimal odds. Fractional odds are converted before comparison.</p><b>Estimated edge</b><p class="small">Your estimated win probability minus the market-implied probability. Estimates need reliable form and odds data before they can be trusted.</p></div>
+</section>
+<section id="calculator" class="hidden">
+ <h2>Value calculator</h2>
+ <p class="small">Enter a horse's odds and your own estimated chance. Use a realistic estimate, not the horse's odds alone.</p>
+ <div class="card">
+  <label>Horse name</label><input id="horseName" placeholder="e.g. Example Runner">
+  <label>Fractional odds</label><input id="fraction" placeholder="e.g. 8/1" value="8/1">
+  <label>Your estimated chance of winning (%)</label><input id="chance" type="number" min="1" max="99" value="16">
+  <button onclick="calculate()">Calculate value</button>
+  <div id="calcResult" style="margin-top:14px"></div>
+ </div>
+ <div class="notice">This calculator is educational. Odds can move, bookmakers include a margin, and your probability estimate may be wrong. It does not place bets.</div>
+</section>
+<section id="tracker" class="hidden">
+ <h2>Results tracker</h2>
+ <div class="card"><div class="row"><b>Bankroll tracker</b><span class="tag neutral">LOCAL DEMO</span></div>
+ <label>Starting bank (£)</label><input id="bank" type="number" value="100" min="0">
+ <label>Stake (£)</label><input id="stake" type="number" value="2" min="0.01" step="0.01">
+ <label>Result</label><select id="result"><option value="win">Won</option><option value="loss">Lost</option><option value="void">Void / returned</option></select>
+ <label>Decimal odds (for a winner)</label><input id="trackOdds" type="number" min="1.01" step="0.01" value="9">
+ <button onclick="recordResult()">Record result</button><div id="trackerResult" class="small" style="margin-top:12px">No results recorded yet.</div>
+ </div>
+ <div class="notice">Tracker entries stay in this browser on this device. V1 is a prototype, not a synced account.</div>
+</section>
+<section id="about" class="hidden">
+ <h2>About Racing Edge</h2>
+ <div class="card"><b>Built in stages</b><p class="small">Version 1 gives us the Android-friendly app shell, a sample shortlist, a value calculator and a simple results tracker.</p><p class="small">Next: connect a legitimate free racing-data source, then build and test the form-rating model. Free sources may have usage limits and may not provide bookmaker prices.</p></div>
+ <div class="card"><b>Responsible use</b><p class="small">Horse racing involves risk. Never stake money you cannot afford to lose. No prediction system can guarantee winners or profit. Set limits and avoid chasing losses.</p></div>
+</section>
+</main>
+<footer>Racing Edge · Version 1 · Demo mode</footer>
+<nav class="tabs">
+ <button class="active" onclick="showTab('home',this)">⌂<br>Home</button>
+ <button onclick="showTab('calculator',this)">◈<br>Value</button>
+ <button onclick="showTab('tracker',this)">▤<br>Tracker</button>
+ <button onclick="showTab('about',this)">ⓘ<br>About</button>
+</nav>
+<script>
+const demo=[
+ {time:"13:30",course:"Example Downs",horse:"Copper Comet",odds:"8/1",score:82,edge:"+4.9%",note:"Illustrative value flag"},
+ {time:"14:05",course:"Sample Park",horse:"Misty Harbour",odds:"11/2",score:76,edge:"+3.2%",note:"Illustrative value flag"},
+ {time:"15:10",course:"Mockley",horse:"Quiet Thunder",odds:"16/1",score:69,edge:"—",note:"Needs more evidence"}
+];
+function render(){document.getElementById('shortlist').innerHTML=demo.map(x=>`<div class="card"><div class="row"><span class="small">${x.time} · ${x.course}</span><span class="tag ${x.edge==='—'?'neutral':'warn'}">${x.edge==='—'?'WATCHLIST':'VALUE FLAG'}</span></div><div class="row" style="margin-top:8px"><div><div class="horse">${x.horse}</div><div class="small">${x.note}</div></div><div class="odds">${x.odds}</div></div><div class="row small" style="margin-top:10px"><span>Model rating (demo)</span><b>${x.score}/100</b></div><div class="scorebar"><i style="width:${x.score}%"></i></div></div>`).join('')}
+function showTab(id,btn){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');window.scrollTo(0,0)}
+function decimal(o){let p=o.trim().split('/');if(p.length!==2||+p[1]===0)throw Error('Enter fractional odds such as 8/1 or 11/4.');return 1+(+p[0]/+p[1])}
+function calculate(){let name=document.getElementById('horseName').value.trim()||'This horse',o,ch=+document.getElementById('chance').value;try{o=decimal(document.getElementById('fraction').value)}catch(e){document.getElementById('calcResult').innerHTML='<span style="color:var(--red)">'+e.message+'</span>';return}if(!Number.isFinite(ch)||ch<=0||ch>=100){document.getElementById('calcResult').textContent='Enter a probability between 1% and 99%.';return}let implied=100/o,edge=ch-implied,ev=(ch/100)*(o-1)-(1-ch/100);document.getElementById('calcResult').innerHTML=`<div class="card"><b>${name}</b><div class="statgrid"><div class="stat"><b>${implied.toFixed(1)}%</b><span>ODDS IMPLIED</span></div><div class="stat"><b>${ch.toFixed(1)}%</b><span>YOUR ESTIMATE</span></div><div class="stat"><b style="color:${edge>0?'var(--green)':'var(--gold)'}">${edge>0?'+':''}${edge.toFixed(1)}%</b><span>ESTIMATED EDGE</span></div></div><p class="small">Estimated net return per £1 at these odds: ${ev>=0?'+':''}£${ev.toFixed(2)} before any deductions. This is only as reliable as your probability estimate.</p></div>`}
+function recordResult(){let bank=+document.getElementById('bank').value,stake=+document.getElementById('stake').value,kind=document.getElementById('result').value,odds=+document.getElementById('trackOdds').value;if(stake<=0||bank<0){alert('Enter a valid bank and stake.');return}let change=kind==='win'?stake*(odds-1):kind==='loss'?-stake:0;let updated=bank+change;document.getElementById('bank').value=updated.toFixed(2);document.getElementById('trackerResult').textContent=`Recorded ${kind}. Change: ${change>=0?'+':''}£${change.toFixed(2)}. Updated bank: £${updated.toFixed(2)}.`}
+document.getElementById('today').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});render();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
